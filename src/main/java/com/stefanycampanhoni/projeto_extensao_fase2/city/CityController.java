@@ -29,7 +29,7 @@ public class CityController {
     }
 
     @PostMapping
-    public ResponseEntity<City> save(City city) {
+    public ResponseEntity<City> save(CityDto city) {
         return ResponseEntity.status(HttpStatus.CREATED).body(cityService.save(city));
     }
 

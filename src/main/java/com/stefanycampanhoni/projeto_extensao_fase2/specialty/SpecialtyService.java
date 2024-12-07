@@ -11,7 +11,12 @@ import java.util.List;
 public class SpecialtyService {
     private final SpecialtyRepository specialtyRepository;
 
-    public Specialty save(Specialty specialty) {
+    public Specialty save(SpecialtyDto specialtyDto) {
+        Specialty specialty = Specialty.builder()
+                .name(specialtyDto.name())
+                .type(specialtyDto.type())
+                .build();
+
         return specialtyRepository.save(specialty);
     }
 

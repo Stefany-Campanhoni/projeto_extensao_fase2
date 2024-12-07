@@ -1,6 +1,8 @@
 package com.stefanycampanhoni.projeto_extensao_fase2.mentor;
 
+import com.stefanycampanhoni.projeto_extensao_fase2.city.CityService;
 import com.stefanycampanhoni.projeto_extensao_fase2.exception.NotFoundException;
+import com.stefanycampanhoni.projeto_extensao_fase2.specialty.SpecialtyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +12,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MentorService {
     private final MentorRepository mentorRepository;
+    private final CityService cityService;
+    private final SpecialtyService specialtyService;
 
-    public Mentor save(Mentor mentor) {
+    public Mentor save(MentorDto mentorDto) {
+        Mentor mentor = Mentor.builder()
+                .name(mentorDto.name())
+                .description(mentorDto.description())
+                .email(mentorDto.email())
+                .city(cityService.findById(mentorDto.cityId()))
+                .specialty(specialtyService.findById(mentorDto.specialtyId()))
+                .build();
+
         return mentorRepository.save(mentor);
     }
 

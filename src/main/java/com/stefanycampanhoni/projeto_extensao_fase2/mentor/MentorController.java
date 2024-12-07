@@ -29,7 +29,7 @@ public class MentorController {
     }
 
     @PostMapping
-    public ResponseEntity<Mentor> save(Mentor mentor) {
+    public ResponseEntity<Mentor> save(MentorDto mentor) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mentorService.save(mentor));
     }
 

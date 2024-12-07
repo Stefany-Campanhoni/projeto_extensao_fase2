@@ -11,7 +11,12 @@ import java.util.List;
 public class CityService {
     private final CityRepository cityRepository;
 
-    public City save(City city) {
+    public City save(CityDto cityDto) {
+        City city = City.builder()
+                .name(cityDto.name())
+                .state(cityDto.state())
+                .build();
+
         return cityRepository.save(city);
     }
 

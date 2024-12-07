@@ -29,7 +29,7 @@ public class SpecialtyController {
     }
 
     @PostMapping
-    public ResponseEntity<Specialty> save(Specialty specialty) {
+    public ResponseEntity<Specialty> save(SpecialtyDto specialty) {
         return ResponseEntity.status(HttpStatus.CREATED).body(specialtyService.save(specialty));
     }
 
