@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: projeto_extensao_fase2
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase2
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
