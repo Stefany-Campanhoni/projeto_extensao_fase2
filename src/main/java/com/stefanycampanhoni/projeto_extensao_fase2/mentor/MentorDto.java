@@ -14,7 +14,6 @@ public record MentorDto(
         @Length(max = 200)
         String description,
 
-
         @Email
         @NotBlank
         @Length(max = 80)

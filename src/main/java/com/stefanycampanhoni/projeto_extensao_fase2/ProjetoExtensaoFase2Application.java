@@ -15,14 +15,14 @@ public class ProjetoExtensaoFase2Application {
 	}
 
 	@Configuration
-	@EnableWebMvc
-	public static class WebSecurityConfig implements WebMvcConfigurer {
-		@Override
-		public void addCorsMappings(CorsRegistry registry) {
-			registry.addMapping("/**")
-					.allowedOrigins("*")
-					.allowedMethods("*")
-					.allowedHeaders("*");
-		}
-	}
+    @EnableWebMvc
+    public static class WebSecurityConfig implements WebMvcConfigurer {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**")
+                    .allowedOrigins("*")
+                    .allowedMethods("*")
+                    .allowedHeaders("*");
+        }
+    }
 }

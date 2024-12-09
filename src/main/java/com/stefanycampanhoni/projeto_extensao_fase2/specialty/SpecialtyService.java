@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +26,12 @@ public class SpecialtyService {
                 .orElseThrow(() -> new NotFoundException("Specialty not found"));
     }
 
-    public List<Specialty> findAll() {
-        return specialtyRepository.findAll();
+    public Set<String> findAllTypes() {
+        return specialtyRepository.findAllSpecialtyTypes();
+    }
+
+    public List<Specialty> findSpecialtyNamesByType(String type) {
+        return specialtyRepository.findAvailableSpecialtiesByType(type);
     }
 
     public void delete(Integer id) {

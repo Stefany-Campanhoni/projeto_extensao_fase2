@@ -6,6 +6,7 @@ import com.stefanycampanhoni.projeto_extensao_fase2.specialty.SpecialtyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,10 +34,28 @@ public class MentorService {
     }
 
     public List<Mentor> findAll() {
-        return mentorRepository.findAll();
+        return mentorRepository.findAll()
+                .stream()
+                .peek(mentor -> {
+                    mentor.setCity(cityService.findById(mentor.getCity().getId()));
+                    mentor.setSpecialty(specialtyService.findById(mentor.getSpecialty().getId()));
+                })
+                .sorted(Comparator.comparing(Mentor::getId))
+                .toList();
     }
 
     public void delete(Integer id) {
         mentorRepository.deleteById(id);
+    }
+
+    public Mentor update(Integer id, MentorDto mentorDto) {
+        Mentor mentor = this.findById(id);
+        mentor.setName(mentorDto.name());
+        mentor.setEmail(mentorDto.email());
+        mentor.setDescription(mentorDto.description());
+        mentor.setCity(cityService.findById(mentorDto.cityId()));
+        mentor.setSpecialty(specialtyService.findById(mentorDto.specialtyId()));
+
+        return mentorRepository.save(mentor);
     }
 }
