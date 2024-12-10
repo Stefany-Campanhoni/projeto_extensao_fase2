@@ -58,4 +58,15 @@ public class MentorService {
 
         return mentorRepository.save(mentor);
     }
+
+    public List<Mentor> filterMentors(String name, String cityName, String specialtyType) {
+        return mentorRepository.findMentorsByFilters(name, cityName, specialtyType)
+                .stream()
+                .peek(mentor -> {
+                    mentor.setCity(cityService.findById(mentor.getCity().getId()));
+                    mentor.setSpecialty(specialtyService.findById(mentor.getSpecialty().getId()));
+                })
+                .sorted(Comparator.comparing(Mentor::getId))
+                .toList();
+    }
 }
