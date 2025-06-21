@@ -1,6 +1,7 @@
 package com.stefanycampanhoni.projeto_extensao_fase2.mentor;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
@@ -19,10 +20,19 @@ public record MentorDto(
         @Length(max = 80)
         String email,
 
+        @NotBlank
+        @Length(max = 45)
+        String password,
+
+
+        Role role,
+
         @NotNull
         Integer cityId,
 
         @NotNull
         Integer specialtyId
+
+
 ) {
 }
