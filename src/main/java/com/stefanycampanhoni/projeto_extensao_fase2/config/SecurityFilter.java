@@ -1,7 +1,6 @@
 package com.stefanycampanhoni.projeto_extensao_fase2.config;
 
-
-
+import com.stefanycampanhoni.projeto_extensao_fase2.exception.InvalidEmailException;
 import com.stefanycampanhoni.projeto_extensao_fase2.jwt.TokenService;
 import com.stefanycampanhoni.projeto_extensao_fase2.mentor.Mentor;
 import com.stefanycampanhoni.projeto_extensao_fase2.mentor.MentorRepository;
@@ -10,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
@@ -29,40 +29,31 @@ public class SecurityFilter extends OncePerRequestFilter {
     private MentorRepository mentorRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String login = tokenService.validateToken(this.getTokenFromHeader(request));
 
-        String token = this.recuperarToken(request);
+        if (login != null) {
+            Mentor mentor = mentorRepository.findByEmail(login).orElseThrow(InvalidEmailException::new);
 
-        if (token != null) {
-            String login = tokenService.validarToken(token);
-
-            if (login != null) {
-                Optional<Mentor> usuarioResult = mentorRepository.findByEmail(login);
-
-                if (usuarioResult.isPresent()) {
-                    Mentor mentor = usuarioResult.get();
-                    List<GrantedAuthority> authorities = List.of(
-                            new SimpleGrantedAuthority("ROLE_" + mentor.getRole().name()) // role vem do seu enum
-                    );
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(mentor, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                     throw new RuntimeException("Usuário não encontrado!");
-                }
-            }
+            List<GrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("ROLE_" + mentor.getRole().name())
+            );
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(mentor, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private String recuperarToken(HttpServletRequest request) {
+    private String getTokenFromHeader(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token == null || token.isBlank()) {
-            return null;
+            throw new RuntimeException("Token de autenticação não encontrado!");
         }
+
         return token.replace("Bearer ", "");
     }
 }

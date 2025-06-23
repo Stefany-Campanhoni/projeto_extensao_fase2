@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,18 +34,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/mentors").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/mentors/filter").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/mentors/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/mentors").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/mentors/{id}").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.DELETE,"/mentors/{id}").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated()
-                        //Usuário deve poder editar/excluir somente seus dados se seu role for "USER"
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(HttpMethod.GET, "/mentors").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/mentors/filter").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/mentors/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/mentors").permitAll()
+                                .requestMatchers(HttpMethod.PUT,"/mentors/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.DELETE,"/mentors/{id}").hasAnyRole("ADMIN", "USER")
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
