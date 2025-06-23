@@ -1,11 +1,14 @@
 spring:
   application:
-    name: projeto_extensao_fase2
+    name: projeto_extensao_fase3
+  security:
+    secret: "Access key"
+    expirationTime: 1
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase2
+    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase3
     username: postgres
-    password: Sen@c2023
+    password: Carol1510
     driver-class-name: org.postgresql.Driver
 
   jpa:

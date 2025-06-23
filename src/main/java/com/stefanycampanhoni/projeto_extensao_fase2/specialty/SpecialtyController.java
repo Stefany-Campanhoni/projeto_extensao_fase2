@@ -18,7 +18,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping(path = "/specialties")
 public class SpecialtyController {
-    private final SpecialtyService specialtyService;
+    private SpecialtyService specialtyService;
 
     @GetMapping(path = "/types")
     public ResponseEntity<Set<String>> getAllSpecialtyTypes() {

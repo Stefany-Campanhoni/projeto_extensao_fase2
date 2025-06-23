@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MentorRepository extends JpaRepository<Mentor, Integer> {
@@ -20,4 +21,5 @@ public interface MentorRepository extends JpaRepository<Mentor, Integer> {
     List<Mentor> findMentorsByFilters(@Param("name") String name,
                                       @Param("cityName") String cityName,
                                       @Param("specialtyType") String specialtyType);
+    Optional<Mentor> findByEmail(String email);
 }

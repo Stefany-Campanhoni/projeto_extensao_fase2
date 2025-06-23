@@ -55,4 +55,13 @@ public class MentorController {
                                          @RequestBody @Valid MentorDto mentor) {
         return ResponseEntity.ok(mentorService.update(id, mentor));
     }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Mentor mentor) {
+        try {
+            return ResponseEntity.ok().body(mentorService.login(mentor));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // agora mostra o erro no body
+        }
+    }
+
 }
