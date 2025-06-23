@@ -3,7 +3,7 @@ spring:
     name: projeto_extensao_fase3
   security:
     secret: "Access key"
-    expirationTime: 1
+    expirationTime: 5 # in minutes
 
   datasource:
     url: jdbc:postgresql://localhost:5432/projeto_extensao_fase3

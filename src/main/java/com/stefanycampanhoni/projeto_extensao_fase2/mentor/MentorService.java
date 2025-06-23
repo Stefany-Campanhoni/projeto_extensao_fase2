@@ -1,17 +1,18 @@
 package com.stefanycampanhoni.projeto_extensao_fase2.mentor;
 
 import com.stefanycampanhoni.projeto_extensao_fase2.city.CityService;
+import com.stefanycampanhoni.projeto_extensao_fase2.exception.InvalidEmailException;
+import com.stefanycampanhoni.projeto_extensao_fase2.exception.InvalidPasswordException;
 import com.stefanycampanhoni.projeto_extensao_fase2.exception.NotFoundException;
 import com.stefanycampanhoni.projeto_extensao_fase2.jwt.TokenService;
 import com.stefanycampanhoni.projeto_extensao_fase2.specialty.SpecialtyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +24,12 @@ public class MentorService {
     private final TokenService tokenService;
 
     public Mentor save(MentorDto mentorDto) {
-        Role role = mentorDto.role() != null ? mentorDto.role() : Role.USER;
-
         Mentor mentor = Mentor.builder()
                 .name(mentorDto.name())
                 .description(mentorDto.description())
                 .email(mentorDto.email())
                 .password(passwordEncoder.encode(mentorDto.password()))
-                .role(role)
+                .role(Role.USER)
                 .city(cityService.findById(mentorDto.cityId()))
                 .specialty(specialtyService.findById(mentorDto.specialtyId()))
                 .build();
@@ -38,22 +37,17 @@ public class MentorService {
         return mentorRepository.save(mentor);
     }
 
-    public MentorResponse login(Mentor usuario) {
-        Optional<Mentor> usuarioResult = mentorRepository.findByEmail(usuario.getEmail());
-        if (usuarioResult.isEmpty()){
-            throw new RuntimeException("USUARIO NÃO ENCONTRADO");
-        }
-        Mentor usuarioBanco = usuarioResult.get();
-
-        if (passwordEncoder.matches(usuario.getPassword(), usuarioBanco.getPassword())){
-            MentorResponse usuario1 = new MentorResponse();
-            usuario1.setId(usuarioBanco.getId());
-            usuario1.setEmail(usuarioBanco.getEmail());
-            usuario1.setToken(tokenService.gerarToken(usuarioBanco));
-
-            return usuario1;
-        }
-        throw new RuntimeException("SENHA INVÁLIDA!");
+    public Mentor login(LoginDto loginDto) {
+        return mentorRepository
+                .findByEmail(loginDto.email())
+                .map(user -> {
+                    if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+                        throw new InvalidPasswordException();
+                    }
+                    user.setToken(tokenService.generateToken(user));
+                    return user;
+                })
+                .orElseThrow(InvalidEmailException::new);
     }
 
     public Mentor findById(Integer id) {
@@ -73,10 +67,13 @@ public class MentorService {
     }
 
     public void delete(Integer id) {
+        this.checkPermissionToModifyMentor(id);
         mentorRepository.deleteById(id);
     }
 
     public Mentor update(Integer id, MentorDto mentorDto) {
+        this.checkPermissionToModifyMentor(id);
+
         Mentor mentor = this.findById(id);
         mentor.setName(mentorDto.name());
         mentor.setEmail(mentorDto.email());
@@ -86,6 +83,17 @@ public class MentorService {
         mentor.setSpecialty(specialtyService.findById(mentorDto.specialtyId()));
 
         return mentorRepository.save(mentor);
+    }
+
+    private void checkPermissionToModifyMentor(Integer mentorId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Mentor authenticatedMentor = (Mentor) authentication.getPrincipal();
+
+        boolean isAdmin = authenticatedMentor.getRole() == Role.ADMIN;
+        boolean isSelf = authenticatedMentor.getId().equals(Long.valueOf(mentorId));
+        if (!isAdmin && !isSelf) {
+            throw new NotFoundException("Você não tem permissão para modificar este registro.");
+        }
     }
 
     public List<Mentor> filterMentors(String name, String cityName, String specialtyType) {

@@ -12,32 +12,33 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-
 @Service
 public class TokenService {
-    @org.springframework.beans.factory.annotation.Value("${spring.security.secret}")
+
+    @Value("${spring.security.secret}")
     private String secret;
+
     @Value("${spring.security.expirationTime}")
     private Long expirationTime;
 
-    public String gerarToken(Mentor usuario) {
+    private final static String ISSUER = "inova-mentor-api-token";
+
+    public String generateToken(Mentor user) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
-        String token = JWT.create()
-                .withIssuer("exemplo-api-token")
-                .withSubject(usuario.getEmail())
-                .withExpiresAt(this.gerarDataValidadeToken())
+        return JWT.create()
+                .withIssuer(ISSUER)
+                .withSubject(user.getEmail())
+                .withExpiresAt(this.getExpirationDate())
                 .sign(algorithm);
-
-        return token;
     }
 
-    public String validarToken(String token) {
+    public String validateToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
         try {
             return JWT.require(algorithm)
-                    .withIssuer("exemplo-api-token")
+                    .withIssuer(ISSUER)
                     .build()
                     .verify(token)
                     .getSubject();
@@ -49,7 +50,9 @@ public class TokenService {
 
     }
 
-    private Instant gerarDataValidadeToken() {
-        return LocalDateTime.now().plusMinutes(5).toInstant(ZoneOffset.of("-03:00"));
+    private Instant getExpirationDate() {
+        return LocalDateTime.now()
+                .plusMinutes(expirationTime)
+                .toInstant(ZoneOffset.of("-03:00"));
     }
 }
