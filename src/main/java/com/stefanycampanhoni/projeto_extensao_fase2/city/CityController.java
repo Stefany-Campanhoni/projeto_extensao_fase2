@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/cities")
 public class CityController {
-    private CityService cityService;
+    private final CityService cityService;
 
     @GetMapping
     public ResponseEntity<List<City>> getAll() {

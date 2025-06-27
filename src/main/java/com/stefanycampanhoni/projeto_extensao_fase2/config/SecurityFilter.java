@@ -8,7 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private MentorRepository mentorRepository;
+    private final TokenService tokenService;
+    private final MentorRepository mentorRepository;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -51,7 +49,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private String getTokenFromHeader(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token == null || token.isBlank()) {
-            throw new RuntimeException("Token de autenticação não encontrado!");
+            return null;
         }
 
         return token.replace("Bearer ", "");

@@ -58,6 +58,7 @@ public class MentorService {
     public List<Mentor> findAll() {
         return mentorRepository.findAll()
                 .stream()
+                .filter(mentor -> mentor.getRole() != Role.ADMIN)
                 .peek(mentor -> {
                     mentor.setCity(cityService.findById(mentor.getCity().getId()));
                     mentor.setSpecialty(specialtyService.findById(mentor.getSpecialty().getId()));
