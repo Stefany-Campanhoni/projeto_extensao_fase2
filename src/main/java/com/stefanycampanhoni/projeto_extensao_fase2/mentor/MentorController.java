@@ -59,7 +59,8 @@ public class MentorController {
     @PostMapping("/login")
     public ResponseEntity<MentorResponse> login(@RequestBody @Valid LoginDto login) {
         Mentor mentor = mentorService.login(login);
-        MentorResponse response = new MentorResponse(mentor.getId(), mentor.getEmail(), mentor.getToken());
+        MentorResponse response =
+                new MentorResponse(mentor.getId(), mentor.getEmail(), mentor.getToken(), mentor.getRole());
         return ResponseEntity.ok().body(response);
     }
 }

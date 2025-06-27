@@ -3,12 +3,12 @@ spring:
     name: projeto_extensao_fase3
   security:
     secret: "Access key"
-    expirationTime: 5 # in minutes
+    expirationTime: 15 # in minutes
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase3
+    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase2
     username: postgres
-    password: Carol1510
+    password: root
     driver-class-name: org.postgresql.Driver
 
   jpa:
