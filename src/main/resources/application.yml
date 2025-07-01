@@ -6,9 +6,9 @@ spring:
     expirationTime: 15 # in minutes
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase2
+    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase3
     username: postgres
-    password: root
+    password: Sen@c2023
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -25,16 +25,6 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
     locations: classpath:db/migration
-    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase2
+    url: jdbc:postgresql://localhost:5432/projeto_extensao_fase3
     user: postgres
-    password: root
-
-# Admin user configuration
-app:
-  admin:
-    email: ${ADMIN_EMAIL:admin@admin.com}
-    password: ${ADMIN_PASSWORD:admin123}
-    name: ${ADMIN_NAME:Admin}
-    description: ${ADMIN_DESCRIPTION:Administrador do sistema}
-    default-city: ${ADMIN_DEFAULT_CITY:Criciúma}
-    default-specialty: ${ADMIN_DEFAULT_SPECIALTY:Engenharia de Software}
+    password: Sen@c2023
