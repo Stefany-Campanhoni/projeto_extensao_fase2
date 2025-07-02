@@ -79,7 +79,6 @@ public class MentorService {
         mentor.setName(mentorDto.name());
         mentor.setEmail(mentorDto.email());
         mentor.setDescription(mentorDto.description());
-        mentor.setPassword(mentorDto.password());
         mentor.setCity(cityService.findById(mentorDto.cityId()));
         mentor.setSpecialty(specialtyService.findById(mentorDto.specialtyId()));
 
