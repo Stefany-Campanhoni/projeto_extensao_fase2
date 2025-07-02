@@ -19,8 +19,6 @@ public record MentorDto(
         @Length(max = 80)
         String email,
 
-        @NotNull
-        @NotBlank
         String password,
 
         @NotNull
