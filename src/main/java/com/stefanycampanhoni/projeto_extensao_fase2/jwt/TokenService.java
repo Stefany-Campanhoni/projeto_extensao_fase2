@@ -3,6 +3,7 @@ package com.stefanycampanhoni.projeto_extensao_fase2.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.stefanycampanhoni.projeto_extensao_fase2.mentor.Mentor;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,8 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
 
+        } catch (TokenExpiredException e) {
+            throw e;
         } catch (JWTVerificationException e) {
             e.printStackTrace();
             return null;

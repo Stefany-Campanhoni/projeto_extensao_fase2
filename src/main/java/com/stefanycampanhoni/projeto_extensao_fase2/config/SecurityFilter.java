@@ -1,5 +1,6 @@
 package com.stefanycampanhoni.projeto_extensao_fase2.config;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.stefanycampanhoni.projeto_extensao_fase2.exception.InvalidEmailException;
 import com.stefanycampanhoni.projeto_extensao_fase2.jwt.TokenService;
 import com.stefanycampanhoni.projeto_extensao_fase2.mentor.Mentor;
@@ -30,20 +31,27 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String login = tokenService.validateToken(this.getTokenFromHeader(request));
+        try {
+            String login = tokenService.validateToken(this.getTokenFromHeader(request));
 
-        if (login != null) {
-            Mentor mentor = mentorRepository.findByEmail(login).orElseThrow(InvalidEmailException::new);
+            if (login != null) {
+                Mentor mentor = mentorRepository.findByEmail(login).orElseThrow(InvalidEmailException::new);
 
-            List<GrantedAuthority> authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + mentor.getRole().name())
-            );
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(mentor, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                List<GrantedAuthority> authorities = List.of(
+                        new SimpleGrantedAuthority("ROLE_" + mentor.getRole().name())
+                );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(mentor, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (TokenExpiredException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\":\"Token has expired\"}");
+            response.getWriter().flush();
         }
-
-        filterChain.doFilter(request, response);
     }
 
     private String getTokenFromHeader(HttpServletRequest request) {
@@ -55,5 +63,3 @@ public class SecurityFilter extends OncePerRequestFilter {
         return token.replace("Bearer ", "");
     }
 }
-
-
