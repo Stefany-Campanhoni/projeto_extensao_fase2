@@ -97,7 +97,16 @@ public class MentorService {
     }
 
     public List<Mentor> filterMentors(String name, String cityName, String specialtyType) {
-        return mentorRepository.findMentorsByFilters(name, cityName, specialtyType)
+        String[] filters = {name, cityName, specialtyType};
+        for (int i = 0; i < filters.length; i++) {
+            if (filters[i] == null) {
+                filters[i] = "";
+            }
+        }
+
+        return mentorRepository.findMentorsByFilters(filters[0],
+                                                     filters[1],
+                                                     filters[2])
                 .stream()
                 .peek(mentor -> {
                     mentor.setCity(cityService.findById(mentor.getCity().getId()));
